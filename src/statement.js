@@ -1,27 +1,71 @@
 function statement(invoice, plays) {
-  let totalAmount = 0;
-  let volumeCredits = 0;
-  let orderContent = '';
-  for (let performance of invoice.performances) {
-    const play = plays[performance.playID];
-    let thisAmount = calculateAmount(play, performance);
-    totalAmount += thisAmount;
-    let thisCredit = calculateCredit(performance, play);
-    volumeCredits += thisCredit;
-    orderContent += printOrderLine(play, thisAmount, performance);
-  }
-  let result = printResult(invoice, orderContent, totalAmount, volumeCredits);
+  let data = getData(invoice,plays);
+  let result = printText(data);
+  return result;
+}
+
+function statementHtml(invoice, plays) {
+  let data = getData(invoice,plays);
+  let result = printHtml(data);
   return result;
 }
 
 module.exports = {
   statement,
+  statementHtml,
 };
-function printResult(invoice, orderContent, totalAmount, volumeCredits) {
-  let result = `Statement for ${invoice.customer}\n`;
-  result += orderContent;
-  result += `Amount owed is ${format(totalAmount)}\n`;
-  result += `You earned ${volumeCredits} credits \n`;
+function getData(invoice,plays){
+  let totalAmount = calculateTotalAmount(invoice, plays);
+  let volumeCredits = calculateColumeCredits(invoice, plays);
+  return {totalAmount,volumeCredits,invoice,plays};
+}
+function printHtml(data) {
+  let result = `<h1>Statement for ${data.invoice.customer}</h1>\n` +
+    '<table>\n' +
+    '<tr><th>play</th><th>seats</th><th>cost</th></tr>';
+  for (let performance of data.invoice.performances) {
+    const play = data.plays[performance.playID];
+    let thisAmount = calculateAmount(play, performance);
+    result += printOrderHtmlLine(play, thisAmount, performance);
+  }
+  result += `</table>\n<p>Amount owed is <em>${format(data.totalAmount)}</em></p>\n`;
+  result += `<p>You earned <em>${data.volumeCredits}</em> credits</p>\n`;
+  return result;
+}
+
+function printOrderHtmlLine(play, thisAmount, performance) {
+  return ` <tr><td>${play.name}</td><td>${performance.audience}</td><td>${format(thisAmount)}</td></tr>\n`
+}
+
+function calculateTotalAmount(invoice, plays) {
+  let totalAmount = 0;
+  for (let performance of invoice.performances) {
+    const play = plays[performance.playID];
+    let thisAmount = calculateAmount(play, performance);
+    totalAmount += thisAmount;
+  }
+  return totalAmount;
+}
+
+function calculateColumeCredits(invoice, plays) {
+  let columeCredits = 0;
+  for (let performance of invoice.performances) {
+    const play = plays[performance.playID];
+    let thisCredit = calculateCredit(performance, play);
+    columeCredits += thisCredit;
+  }
+  return columeCredits;
+}
+
+function printText(data) {
+  let result = `Statement for ${data.invoice.customer}\n`;
+  for (let performance of data.invoice.performances) {
+    const play = data.plays[performance.playID];
+    let thisAmount = calculateAmount(play, performance);
+    result += printOrderLine(play, thisAmount, performance);
+  }
+  result += `Amount owed is ${format(data.totalAmount)}\n`;
+  result += `You earned ${data.volumeCredits} credits \n`;
   return result;
 }
 
