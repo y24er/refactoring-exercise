@@ -4,13 +4,11 @@ function statement(invoice, plays) {
   let orderContent = '';
   for (let performance of invoice.performances) {
     const play = plays[performance.playID];
-    let thisAmount = 0;
-    thisAmount = calculateAmount(play, performance);
-    let thisCredit = 0;
-    thisCredit = calculateCredit(performance, play);
-    orderContent += printOrderLine(play, thisAmount, performance);
+    let thisAmount = calculateAmount(play, performance);
     totalAmount += thisAmount;
+    let thisCredit = calculateCredit(performance, play);
     volumeCredits += thisCredit;
+    orderContent += printOrderLine(play, thisAmount, performance);
   }
   let result = printResult(invoice, orderContent, totalAmount, volumeCredits);
   return result;
