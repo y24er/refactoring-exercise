@@ -2,13 +2,13 @@ function statement(invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
   let orderContent = '';
-  for (let perf of invoice.performances) {
-    const play = plays[perf.playID];
+  for (let performance of invoice.performances) {
+    const play = plays[performance.playID];
     let thisAmount = 0;
-    thisAmount = calculateAmount(play, thisAmount, perf);
+    thisAmount = calculateAmount(play, thisAmount, performance);
     let thisCredit = 0;
-    thisCredit = calculateCredit(perf, play);
-    orderContent += printOrderLine(play, thisAmount, perf);
+    thisCredit = calculateCredit(performance, play);
+    orderContent += printOrderLine(play, thisAmount, performance);
     totalAmount += thisAmount;
     volumeCredits += thisCredit;
   }
@@ -27,8 +27,8 @@ function printResult(invoice, orderContent, totalAmount, volumeCredits) {
   return result;
 }
 
-function printOrderLine(play, thisAmount, perf) {
-  return ` ${play.name}: ${format(thisAmount)} (${perf.audience} seats)\n`;
+function printOrderLine(play, thisAmount, performance) {
+  return ` ${play.name}: ${format(thisAmount)} (${performance.audience} seats)\n`;
 }
 
 function format(amount) {
@@ -39,28 +39,28 @@ function format(amount) {
   }).format(amount / 100);
 }
 
-function calculateCredit(perf, play) {
+function calculateCredit(performance, play) {
   let thisCredit = 0;
-  thisCredit += Math.max(perf.audience - 30, 0);
+  thisCredit += Math.max(performance.audience - 30, 0);
   if ('comedy' === play.type)
-    thisCredit += Math.floor(perf.audience / 5);
+    thisCredit += Math.floor(performance.audience / 5);
   return thisCredit;
 }
 
-function calculateAmount(play, thisAmount, perf) {
+function calculateAmount(play, thisAmount, performance) {
   switch (play.type) {
     case 'tragedy':
       thisAmount = 40000;
-      if (perf.audience > 30) {
-        thisAmount += 1000 * (perf.audience - 30);
+      if (performance.audience > 30) {
+        thisAmount += 1000 * (performance.audience - 30);
       }
       break;
     case 'comedy':
       thisAmount = 30000;
-      if (perf.audience > 20) {
-        thisAmount += 10000 + 500 * (perf.audience - 20);
+      if (performance.audience > 20) {
+        thisAmount += 10000 + 500 * (performance.audience - 20);
       }
-      thisAmount += 300 * perf.audience;
+      thisAmount += 300 * performance.audience;
       break;
     default:
       throw new Error(`unknown type: ${play.type}`);
