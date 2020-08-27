@@ -1,4 +1,4 @@
-function statement (invoice, plays) {
+function statement(invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
   let result = `Statement for ${invoice.customer}\n`;
@@ -11,14 +11,14 @@ function statement (invoice, plays) {
     const play = plays[perf.playID];
     let thisAmount = 0;
     thisAmount = calculateAmount(play, thisAmount, perf);
-       // add volume credits
-       volumeCredits += Math.max(perf.audience - 30, 0);
-       // add extra credit for every ten comedy attendees
-       if ('comedy' === play.type) volumeCredits += Math.floor(perf.audience / 5);
-       //print line for this order
-       result += ` ${play.name}: ${format(thisAmount / 100)} (${perf.audience} seats)\n`;
-       totalAmount += thisAmount;
-     }
+    let thisCredit = 0;
+    // add volume credits
+    thisCredit = calculateCredit(perf, play);
+    //print line for this order
+    result += ` ${play.name}: ${format(thisAmount / 100)} (${perf.audience} seats)\n`;
+    totalAmount += thisAmount;
+    volumeCredits += thisCredit;
+  }
   result += `Amount owed is ${format(totalAmount / 100)}\n`;
   result += `You earned ${volumeCredits} credits \n`;
   return result;
@@ -27,6 +27,15 @@ function statement (invoice, plays) {
 module.exports = {
   statement,
 };
+function calculateCredit(perf, play) {
+  let thisCredit = 0;
+  thisCredit += Math.max(perf.audience - 30, 0);
+  // add extra credit for every ten comedy attendees
+  if ('comedy' === play.type)
+    thisCredit += Math.floor(perf.audience / 5);
+  return thisCredit;
+}
+
 function calculateAmount(play, thisAmount, perf) {
   switch (play.type) {
     case 'tragedy':
