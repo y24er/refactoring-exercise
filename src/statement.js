@@ -5,7 +5,7 @@ function statement(invoice, plays) {
   for (let performance of invoice.performances) {
     const play = plays[performance.playID];
     let thisAmount = 0;
-    thisAmount = calculateAmount(play, thisAmount, performance);
+    thisAmount = calculateAmount(play, performance);
     let thisCredit = 0;
     thisCredit = calculateCredit(performance, play);
     orderContent += printOrderLine(play, thisAmount, performance);
@@ -47,7 +47,8 @@ function calculateCredit(performance, play) {
   return thisCredit;
 }
 
-function calculateAmount(play, thisAmount, performance) {
+function calculateAmount(play, performance) {
+  let thisAmount = 0;
   switch (play.type) {
     case 'tragedy':
       thisAmount = 40000;
