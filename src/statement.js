@@ -7,9 +7,7 @@ function statement(invoice, plays) {
     let thisAmount = 0;
     thisAmount = calculateAmount(play, thisAmount, perf);
     let thisCredit = 0;
-    // add volume credits
     thisCredit = calculateCredit(perf, play);
-    //print line for this order
     result += ` ${play.name}: ${format(thisAmount)} (${perf.audience} seats)\n`;
     totalAmount += thisAmount;
     volumeCredits += thisCredit;
@@ -33,7 +31,6 @@ function format(amount) {
 function calculateCredit(perf, play) {
   let thisCredit = 0;
   thisCredit += Math.max(perf.audience - 30, 0);
-  // add extra credit for every ten comedy attendees
   if ('comedy' === play.type)
     thisCredit += Math.floor(perf.audience / 5);
   return thisCredit;
