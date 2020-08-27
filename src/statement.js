@@ -14,11 +14,13 @@ module.exports = {
   statement,
   statementHtml,
 };
+
 function getData(invoice,plays){
   let totalAmount = calculateTotalAmount(invoice, plays);
   let volumeCredits = calculateColumeCredits(invoice, plays);
   return {totalAmount,volumeCredits,invoice,plays};
 }
+
 function printHtml(data) {
   let result = `<h1>Statement for ${data.invoice.customer}</h1>\n` +
     '<table>\n' +
@@ -26,15 +28,11 @@ function printHtml(data) {
   for (let performance of data.invoice.performances) {
     const play = data.plays[performance.playID];
     let thisAmount = calculateAmount(play, performance);
-    result += printOrderHtmlLine(play, thisAmount, performance);
+    result += ` <tr><td>${play.name}</td><td>${performance.audience}</td><td>${format(thisAmount)}</td></tr>\n`;
   }
   result += `</table>\n<p>Amount owed is <em>${format(data.totalAmount)}</em></p>\n`;
   result += `<p>You earned <em>${data.volumeCredits}</em> credits</p>\n`;
   return result;
-}
-
-function printOrderHtmlLine(play, thisAmount, performance) {
-  return ` <tr><td>${play.name}</td><td>${performance.audience}</td><td>${format(thisAmount)}</td></tr>\n`
 }
 
 function calculateTotalAmount(invoice, plays) {
@@ -62,15 +60,11 @@ function printText(data) {
   for (let performance of data.invoice.performances) {
     const play = data.plays[performance.playID];
     let thisAmount = calculateAmount(play, performance);
-    result += printOrderLine(play, thisAmount, performance);
+    result += ` ${play.name}: ${format(thisAmount)} (${performance.audience} seats)\n`;
   }
   result += `Amount owed is ${format(data.totalAmount)}\n`;
   result += `You earned ${data.volumeCredits} credits \n`;
   return result;
-}
-
-function printOrderLine(play, thisAmount, performance) {
-  return ` ${play.name}: ${format(thisAmount)} (${performance.audience} seats)\n`;
 }
 
 function format(amount) {
